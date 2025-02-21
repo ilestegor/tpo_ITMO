@@ -1,6 +1,7 @@
 package org.example.task3.model
 
 import org.example.task3.abstracts.BodyPart
+import org.example.task3.bodyparts.Head
 import org.example.task3.bodyparts.Jaw
 import org.example.task3.bodyparts.Leg
 import org.example.task3.exception.NoShockingEventOccurredException
@@ -31,10 +32,10 @@ data class Person(val name: String) {
     fun jawDrop(){
         if (emotions.calcShockLevel() > MIN_SHOCK_VALUE){
             emotions.updateEmotion(Emotions.CONFUSION, Random.nextInt(100, 200))
-            val jaws = findBodyPart(Jaw::class)
-            jaws.forEach {
-                x -> x as Jaw
-                x.dropJaw()
+            val heads = findBodyPart(Head::class)
+            heads.forEach {
+                x -> x as Head
+                x.jaw.dropJaw()
             }
         } else throw NoShockingEventOccurredException("Jaw can not be dropped. No shocking event found")
     }

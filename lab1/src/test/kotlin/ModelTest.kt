@@ -1,13 +1,11 @@
 import org.example.task3.bodyparts.*
-import org.example.task3.exception.BodyPartIsBusyException
-import org.example.task3.exception.FunctionDoesNotExist
-import org.example.task3.exception.NoShockingEventOccurredException
-import org.example.task3.exception.SurfaceIsBusyException
+import org.example.task3.exception.*
 import org.example.task3.interfaces.Surface
 import org.example.task3.model.ControlPanel
 import org.example.task3.model.Person
 import org.example.task3.utils.InteractionAction
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -18,41 +16,39 @@ import kotlin.test.assertTrue
 
 class ModelTest {
 
-    companion object {
 
-        lateinit var person: Person
-        lateinit var personWithLegsOnSurface: Person
+    private lateinit var person: Person
+    private lateinit var personWithLegsOnSurface: Person
 
-        @BeforeAll
-        @JvmStatic
-        fun setupPerson() {
-            person = Person("Name")
-            person.addBodyPart(
-                Leg(Sides.LEFT), Leg(Sides.RIGHT),
-                Arm(Sides.LEFT), Arm(Sides.RIGHT),
-                Head("Left"), Head("Right")
-            )
+    @BeforeEach
+    fun setupPerson() {
+        person = Person("Name")
+        person.addBodyPart(
+            Leg(Sides.LEFT), Leg(Sides.RIGHT),
+            Arm(Sides.LEFT), Arm(Sides.RIGHT),
+            Head("Left"), Head("Right")
+        )
 
-        }
+    }
 
-        @BeforeAll
-        @JvmStatic
-        fun setupPersonWithLegsOnSurface() {
-            personWithLegsOnSurface = Person("Name")
-            personWithLegsOnSurface.addBodyPart(
-                Leg(Sides.LEFT), Leg(Sides.RIGHT),
-                Arm(Sides.LEFT), Arm(Sides.RIGHT),
-                Head("Left"), Head("Right")
-            )
+    @BeforeEach
+    fun setupPersonWithLegsOnSurface() {
+        personWithLegsOnSurface = Person("Name")
+        personWithLegsOnSurface.addBodyPart(
+            Leg(Sides.LEFT), Leg(Sides.RIGHT),
+            Arm(Sides.LEFT), Arm(Sides.RIGHT),
+            Head("Left"), Head("Right")
+        )
 
-            val legs = personWithLegsOnSurface.findBodyPart(Leg::class)
-            val s: Surface = ControlPanel()
-            legs.forEach { x ->
-                x as Leg
-                x.placeOn(s)
-            }
+        val legs = personWithLegsOnSurface.findBodyPart(Leg::class)
+        val s: Surface = ControlPanel()
+        legs.forEach { x ->
+            x as Leg
+            x.placeOn(s)
         }
     }
+
+
 
     @Test
     fun addBodyPartFunctionTest() {
@@ -118,13 +114,23 @@ class ModelTest {
     }
 
     @Test
-    fun bodyPartIsBusyTest() {
+    fun bodyPartIsBusySmilingTest() {
         val head = Head("h2")
         val arm = Arm(Sides.LEFT)
 
         head.smile(SmileType.SMILE)
 
         assertThrows<BodyPartIsBusyException> { arm.pick(head.jaw.teeth) }
+    }
+
+    @Test
+    fun bodyPartIsBusyPickingTest(){
+        val head = Head("h2")
+        val arm = Arm(Sides.LEFT)
+
+        arm.pick(head.jaw.teeth)
+
+        assertThrows<BodyPartIsBusyException> { head.smile(SmileType.SMILE) }
     }
 
     @Test
@@ -166,8 +172,8 @@ class ModelTest {
         val jaws = personWithLegsOnSurface.findBodyPart(Jaw::class)
 
         val jawsDropped = jaws.all { x ->
-            x as Jaw
-            x.head.jaw.isDropped
+            x as Head
+            x.jaw.isDropped
         }
 
         assertEquals(true, jawsDropped)
@@ -181,7 +187,7 @@ class ModelTest {
 
     @Test
     fun removeLegsFromSurfaceTest(){
-        val p = personWithLegsOnSurface.copy()
+        val p = personWithLegsOnSurface
         val legs = p.findBodyPart(Leg::class)
 
         legs.forEach { x ->
@@ -191,8 +197,32 @@ class ModelTest {
 
         legs.forEach { x -> x as Leg
         assertNull(x.isOnSurface)}
+    }
 
+    @Test
+    fun jawAlreadyDroppedTest(){
+        val person = personWithLegsOnSurface
+        person.shock()
+        person.jawDrop()
 
+        assertThrows<JawAlreadyDroppedException> { person.jawDrop() }
+    }
 
+    @Test
+    fun jawAlreadyClosedTest(){
+        val person = personWithLegsOnSurface
+        person.shock()
+        person.jawDrop()
+
+        val heads = person.findBodyPart(Head::class)
+
+        heads.forEach { x ->
+            x as Head
+            x.jaw.closeJaw()
+        }
+        heads.forEach { x ->
+            x as Head
+            assertThrows<JawClosedException> { x.jaw.closeJaw() }
+        }
     }
 }

@@ -6,11 +6,6 @@ import org.example.task2.readGraph
 import org.example.task2.readGraphFromFile
 import org.example.task3.bodyparts.*
 import org.example.task3.model.Person
-import org.jgrapht.alg.isomorphism.IsomorphismInspector
-import org.jgrapht.alg.shortestpath.DijkstraManyToManyShortestPaths
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath
-import org.jgrapht.graph.DefaultWeightedEdge
-import org.jgrapht.graph.SimpleWeightedGraph
 
 
 interface Clickable {
@@ -43,8 +38,6 @@ class Outer private constructor(){
     }
 }
 fun main() {
-
-
-
+    println("Hello")
 
 }

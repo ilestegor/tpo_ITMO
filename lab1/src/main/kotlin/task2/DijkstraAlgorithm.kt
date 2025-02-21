@@ -5,7 +5,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
 
-tailrec fun readGraphFromFile(filePath: String): Map<Int, Map<Int, Int>> {
+fun readGraphFromFile(filePath: String): Map<Int, Map<Int, Int>> {
     return try {
         readGraph(File(filePath).readLines())
     } catch (e: FileNotFoundException){
