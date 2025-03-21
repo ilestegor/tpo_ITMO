@@ -2,13 +2,16 @@ import org.example.task3.bodyparts.*
 import org.example.task3.exception.*
 import org.example.task3.interfaces.Surface
 import org.example.task3.model.ControlPanel
+import org.example.task3.model.EmotionState
+import org.example.task3.model.Emotions
 import org.example.task3.model.Person
 import org.example.task3.utils.InteractionAction
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.lang.reflect.Method
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -70,6 +73,7 @@ class ModelTest {
         assertEquals(bp.getBodyPartSeparateFunctionsSize(), bpSize - 1)
     }
 
+
     @Test
     fun testExecutionFunctionByName() {
         val bp = Head("h1")
@@ -78,6 +82,8 @@ class ModelTest {
         })
 
         assertDoesNotThrow { bp.executeFunctionByName("Test function", bp) }
+        bp.bodyPartSeparateFunctions["Test function"]?.execute(bp)
+
     }
 
     @Test
@@ -169,7 +175,7 @@ class ModelTest {
 
         personWithLegsOnSurface.jawDrop()
 
-        val jaws = personWithLegsOnSurface.findBodyPart(Jaw::class)
+        val jaws = personWithLegsOnSurface.findBodyPart(Head::class)
 
         val jawsDropped = jaws.all { x ->
             x as Head
@@ -225,4 +231,96 @@ class ModelTest {
             assertThrows<JawClosedException> { x.jaw.closeJaw() }
         }
     }
+
+    @Test
+    fun testSmileGrinChange(){
+        val head = Head("Head")
+        head.jaw.smile(SmileType.GRIN, head)
+
+        assertEquals(SmileType.GRIN, head.jaw.smileType)
+    }
+
+    @Test
+    fun testSadSmileChange(){
+        val head = Head("head")
+        head.jaw.smile(SmileType.SAD, head)
+
+        assertEquals(SmileType.SAD, head.jaw.smileType)
+    }
+    @Test
+    fun testNoneSmileChange(){
+        val head = Head("head")
+        head.jaw.smile(SmileType.NONE, head)
+
+        assertEquals(SmileType.NONE, head.jaw.smileType)
+    }
+
+    @Test
+    fun jawBusyTest(){
+        val head = Head("h")
+        head.smile(SmileType.SMILE)
+        assertThrows<BodyPartIsBusyException> { head.jaw.smile(SmileType.SMILE, head) }
+    }
+
+
+    @Test
+    fun testJoyEmotionChange(){
+        val emotion = EmotionState()
+        emotion.updateEmotion(Emotions.JOY, 5)
+
+        assertEquals(5, emotion.joy)
+    }
+
+    @Test
+    fun testAngerEmotionChange(){
+        val emotion = EmotionState()
+        emotion.updateEmotion(Emotions.ANGER, 5)
+
+        assertEquals(5, emotion.anger)
+    }
+
+    @Test
+    fun testSadnessEmotionChange(){
+        val emotion = EmotionState()
+        emotion.updateEmotion(Emotions.SADNESS, 5)
+
+        assertEquals(5, emotion.sadness)
+    }
+
+    @Test
+    fun testIsReadyForPicking() {
+
+        val arm = Arm(Sides.LEFT)
+        val jaw = Jaw()
+        val head = Head("ds")
+        val teeth = Teeth()
+
+        val method: Method = Arm::class.java.getDeclaredMethod("isReadyForPicking", Jaw::class.java, Head::class.java, Teeth::class.java)
+        method.isAccessible = true
+
+
+        jaw.isBusy = false
+        head.isBusy = false
+        teeth.isBeingPicked = false
+        assertTrue(method.invoke(arm, jaw, head, teeth) as Boolean)
+
+
+        jaw.isBusy = true
+        assertFalse(method.invoke(arm, jaw, head, teeth) as Boolean)
+
+
+        jaw.isBusy = false
+        head.isBusy = true
+        assertFalse(method.invoke(arm, jaw, head, teeth) as Boolean)
+
+
+        head.isBusy = false
+        teeth.isBeingPicked = true
+        assertFalse(method.invoke(arm, jaw, head, teeth) as Boolean)
+
+        teeth.isBeingPicked = false
+        arm.isBusy = true
+        assertFalse(method.invoke(arm, jaw, head, teeth) as Boolean)
+    }
+
 }

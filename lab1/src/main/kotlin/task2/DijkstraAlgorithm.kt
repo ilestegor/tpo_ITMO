@@ -42,30 +42,29 @@ fun readGraph(lines: List<String>): Map<Int, Map<Int, Int>> {
 
 fun dijkstra(graph: Map<Int, Map<Int, Int>>, startVertex: Int = 0): Pair<Map<Int, Int>, Map<Int, Int>> {
     if (graph.isEmpty()) throw GraphEmptyException("Graph is empty")
-    require(startVertex in graph) {"Start vertex $startVertex does not exist"}
+    require(startVertex in graph) { "Start vertex $startVertex does not exist" }
 
     val distances = graph.keys.associateWith { Int.MAX_VALUE }.toMutableMap()
     val predecessor = mutableMapOf<Int, Int>()
-    val pq =PriorityQueue(compareBy<Pair<Int, Int>>{it.second})
+    val unvisited = graph.keys.toMutableSet()
 
-
-    pq.add(startVertex to 0)
     distances[startVertex] = 0
 
-    while (pq.isNotEmpty()) {
-        // Get the node with the smallest distance
-        val (currentNode, currentDist) = pq.poll()
+    while (unvisited.isNotEmpty()) {
+        val currentNode = unvisited.minByOrNull { distances[it]!! }!!
+        val currentDist = distances[currentNode]!!
 
-        // Skip if the current node's distance is already greater than the known shortest distance
-        if (currentDist > distances[currentNode]!!) continue
+        unvisited.remove(currentNode)
 
-        graph[currentNode]?.forEach {(neighbor, weight) ->
-            require(weight >0) {"Graph contains negative weight: $weight"}
-            val newDist = currentDist + weight
-            if (newDist < distances[neighbor]!!) {
-                distances[neighbor] = newDist
-                predecessor[neighbor] = currentNode
-                pq.add(Pair(neighbor, newDist))
+        for ((neighbor, weight) in graph[currentNode]!!) {
+            require(weight > 0) { "Graph contains negative weight: $weight" }
+
+            if (currentDist != Int.MAX_VALUE) {
+                val newDist = currentDist + weight
+                if (newDist < distances[neighbor]!!) {
+                    distances[neighbor] = newDist
+                    predecessor[neighbor] = currentNode
+                }
             }
         }
     }

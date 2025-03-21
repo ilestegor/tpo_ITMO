@@ -11,20 +11,19 @@ enum class Sides{
 class Arm(armSide: Sides) : BodyPart("Arm"), Manipulate {
 
     override fun pick(target: BodyPart) {
-        if (target is Teeth) {
-            val jaw = target.jaw
-            val head = jaw.head
+        target as Teeth
+        val jaw = target.jaw
+        val head = jaw.head
 
-            // Проверяем занятость всех частей тела
-            if (isReadyForPicking(jaw, head, target)) {
-                isBusy = true
-                target.isBeingPicked = true
-                target.isBusy = true
-                jaw.isBusy = true
-                head.isBusy = true
-            } else {
-                throw BodyPartIsBusyException("Невозможно ковырять: часть тела занята")
-            }
+        // Проверяем занятость всех частей тела
+        if (isReadyForPicking(jaw, head, target)) {
+            isBusy = true
+            target.isBeingPicked = true
+            target.isBusy = true
+            jaw.isBusy = true
+            head.isBusy = true
+        } else {
+            throw BodyPartIsBusyException("Невозможно ковырять: часть тела занята")
         }
     }
 

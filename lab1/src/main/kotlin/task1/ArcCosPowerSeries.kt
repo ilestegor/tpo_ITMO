@@ -6,7 +6,6 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.pow
 
-var s = 10
 fun powerSeries(x: Double, tolerance: Double = 1e-10): Double {
     require(x in -1.0..1.0) { "x must be in the range [-1, 1]" }
 
@@ -15,14 +14,14 @@ fun powerSeries(x: Double, tolerance: Double = 1e-10): Double {
 
     var result = PI / 2
     var term = x
-    var n = 0
+    var n = 1
     val xSquared = x * x
 
     while (abs(term) > tolerance) {
         result -= term
         n++
         val numerator = (2 * n - 1).toDouble().pow(2)
-        val denominator = (2 * n) * (2 * n + 1)
+        val denominator = (2 * n + 2) * (2 * n + 3)
         term *= xSquared * (numerator / denominator)
     }
     return result

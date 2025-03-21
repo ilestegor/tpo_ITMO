@@ -4,12 +4,12 @@ enum class Emotions {
 }
 
 class EmotionState(
-    private var confusion: Int = 0,
-    private var fear: Int = 0,
-    private var joy: Int = 0,
-    private var anger: Int = 0,
-    private var sadness: Int = 0,
-    private var disgust: Int = 0
+     var confusion: Int = 0,
+     var fear: Int = 0,
+     var joy: Int = 0,
+     var anger: Int = 0,
+     var sadness: Int = 0,
+     var disgust: Int = 0
 ) {
     fun updateEmotion(emotion: Emotions, intensity: Int) {
         when (emotion) {
@@ -22,9 +22,6 @@ class EmotionState(
         }
     }
 
-    fun getEmotionState(): String {
-        return "Confusion: $confusion, Fear: $fear, Joy: $joy, Anger: $anger, Sadness: $sadness, Disgust: $disgust"
-    }
 
 
     fun calcShockLevel(): Int {

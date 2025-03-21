@@ -9,7 +9,7 @@ class Leg(side: Sides) : BodyPart("Leg"), Placeable {
     var isOnSurface: Surface? = null
 
     override fun placeOn(surface: Surface) {
-        if (surface.isAvailable() && isOnSurface == null) {
+        if (surface.isAvailable()) {
             isOnSurface = surface
         } else throw SurfaceIsBusyException("Surface is busy")
     }

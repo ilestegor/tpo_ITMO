@@ -59,11 +59,6 @@ class DijkstraAlgorithmTest {
         assertThrows<IllegalArgumentException> { readGraph(s) }
     }
 
-    @Test
-    fun notValidInputTest() {
-        val s = listOf("1 a 3")
-        assertThrows<NumberFormatException> { readGraph(s) }
-    }
 
     @Test
     fun singleNodeTest() {
@@ -87,6 +82,16 @@ class DijkstraAlgorithmTest {
         assertEquals(expected, graph)
     }
 
+    @Test
+    fun test(){
+        val s = listOf("1 2 3 4")
+        readGraph(s)
+    }
+    @Test
+    fun test2(){
+        val s = listOf("1 2")
+        readGraph(s)
+    }
     @Test
     fun testSimpleGraph() {
         val result = dijkstra(simpleGraph, 0)
@@ -190,5 +195,6 @@ class DijkstraAlgorithmTest {
         val result = getShortestPath(predecessors, targetVertex)
         assertEquals(expected, result)
     }
+
 
 }

@@ -4,7 +4,7 @@ import org.example.task3.exception.FunctionDoesNotExist
 import org.example.task3.interfaces.IBodyFunction
 
 abstract class BodyPart(private val bodyPartName: String) {
-    private val bodyPartSeparateFunctions = mutableMapOf<String, IBodyFunction>()
+    val bodyPartSeparateFunctions = mutableMapOf<String, IBodyFunction>()
     open var isBusy = false
 
     fun addFunction(name: String, function: IBodyFunction) {
